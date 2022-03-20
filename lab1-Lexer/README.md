@@ -47,7 +47,7 @@ mingw32-make
 ### 运行
 
 ```shell
-ming32-make test
+mingw32-make test
 ```
 
 ### 说明
