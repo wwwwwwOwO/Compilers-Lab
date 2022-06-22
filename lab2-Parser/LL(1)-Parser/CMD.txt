@@ -1,0 +1,153 @@
+D:\hw\Compilers\lab\lab2-Parser\LL(1)-Parser>mingw32-make && mingw32-make test
+g++ main.o Parser.o -o Parser
+./Parser.exe demo.txt
+Grammar:
+E->TA
+A->+TA
+A->-TA
+A->@
+T->FB
+B->*FB
+B->/FB
+B->@
+F->(E)
+F->i
+Terminators with size of 9: {+ - @ * / ( ) i $ }
+nonTerminators with size of 5: {E A T B F }
+First set of production rules
+E->TA: {( i }
+A->+TA: {+ }
+A->-TA: {- }
+A->@: {@ }
+T->FB: {( i }
+B->*FB: {* }
+B->/FB: {/ }
+B->@: {@ }
+F->(E): {( }
+F->i: {i }
+
+First set of nonTerminators
+E: { ( i }
+A: { + - @ }
+T: { ( i }
+B: { * / @ }
+F: { ( i }
+
+Follow set of nonTerminators
+E: { $ ) }
+A: { $ ) }
+T: { $ ) + - }
+B: { $ ) + - }
+F: { $ ) * + - / }
+
+Analysis Table
+               +       -       @       *       /       (       )       i       $
+       E                                           E->TA           E->TA
+       A  A->+TA  A->-TA                                    A->@            A->@
+       T                                           T->FB           T->FB
+       B    B->@    B->@          B->*FB  B->/FB            B->@            B->@
+       F                                          F->(E)            F->i
+Analysing: i
+           stack           input       operation
+              $E              i$      Initialize
+             $AT              i$           E->TA
+            $ABF              i$           T->FB
+            $ABi              i$            F->i
+             $AB               $         Match i
+              $A               $            B->@
+               $               $            A->@
+               $               $         Accept!
+Analyze successfully!
+
+Analysing: i+i
+           stack           input       operation
+              $E            i+i$      Initialize
+             $AT            i+i$           E->TA
+            $ABF            i+i$           T->FB
+            $ABi            i+i$            F->i
+             $AB             +i$         Match i
+              $A             +i$            B->@
+            $AT+             +i$          A->+TA
+             $AT              i$         Match +
+            $ABF              i$           T->FB
+            $ABi              i$            F->i
+             $AB               $         Match i
+              $A               $            B->@
+               $               $            A->@
+               $               $         Accept!
+Analyze successfully!
+
+Analysing: i+i*i
+           stack           input       operation
+              $E          i+i*i$      Initialize
+             $AT          i+i*i$           E->TA
+            $ABF          i+i*i$           T->FB
+            $ABi          i+i*i$            F->i
+             $AB           +i*i$         Match i
+              $A           +i*i$            B->@
+            $AT+           +i*i$          A->+TA
+             $AT            i*i$         Match +
+            $ABF            i*i$           T->FB
+            $ABi            i*i$            F->i
+             $AB             *i$         Match i
+           $ABF*             *i$          B->*FB
+            $ABF              i$         Match *
+            $ABi              i$            F->i
+             $AB               $         Match i
+              $A               $            B->@
+               $               $            A->@
+               $               $         Accept!
+Analyze successfully!
+
+Analysing: i*i*i/i
+           stack           input       operation
+              $E        i*i*i/i$      Initialize
+             $AT        i*i*i/i$           E->TA
+            $ABF        i*i*i/i$           T->FB
+            $ABi        i*i*i/i$            F->i
+             $AB         *i*i/i$         Match i
+           $ABF*         *i*i/i$          B->*FB
+            $ABF          i*i/i$         Match *
+            $ABi          i*i/i$            F->i
+             $AB           *i/i$         Match i
+           $ABF*           *i/i$          B->*FB
+            $ABF            i/i$         Match *
+            $ABi            i/i$            F->i
+             $AB             /i$         Match i
+           $ABF/             /i$          B->/FB
+            $ABF              i$         Match /
+            $ABi              i$            F->i
+             $AB               $         Match i
+              $A               $            B->@
+               $               $            A->@
+               $               $         Accept!
+Analyze successfully!
+
+Analysing: (i+i)*i
+           stack           input       operation
+              $E        (i+i)*i$      Initialize
+             $AT        (i+i)*i$           E->TA
+            $ABF        (i+i)*i$           T->FB
+          $AB)E(        (i+i)*i$          F->(E)
+           $AB)E         i+i)*i$         Match (
+          $AB)AT         i+i)*i$           E->TA
+         $AB)ABF         i+i)*i$           T->FB
+         $AB)ABi         i+i)*i$            F->i
+          $AB)AB          +i)*i$         Match i
+           $AB)A          +i)*i$            B->@
+         $AB)AT+          +i)*i$          A->+TA
+          $AB)AT           i)*i$         Match +
+         $AB)ABF           i)*i$           T->FB
+         $AB)ABi           i)*i$            F->i
+          $AB)AB            )*i$         Match i
+           $AB)A            )*i$            B->@
+            $AB)            )*i$            A->@
+             $AB             *i$         Match )
+           $ABF*             *i$          B->*FB
+            $ABF              i$         Match *
+            $ABi              i$            F->i
+             $AB               $         Match i
+              $A               $            B->@
+               $               $            A->@
+               $               $         Accept!
+Analyze successfully!

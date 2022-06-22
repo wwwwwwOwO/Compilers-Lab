@@ -1,0 +1,121 @@
+D:\hw\Compilers\lab\lab2-Parser\LR-Parser>mingw32-make && mingw32-make test
+g++ -c Parser.cpp
+g++ main.o Parser.o -o Parser
+./Parser.exe demo.txt
+Analysis Table:
+action
+               i       +       -       *       /       (       )       $
+       0      S1                                      S5
+       1              R8      R8      R8      R8              R8      R8
+       2              S6      S7                                      A0
+       3              R3      R3      S8      S9              R3      R3
+       4              R6      R6      R6      R6              R6      R6
+       5      S1                                      S5
+       6      S1                                      S5
+       7      S1                                      S5
+       8      S1                                      S5
+       9      S1                                      S5
+      10              R5      R5      R5      R5              R5      R5
+      11              R4      R4      R4      R4              R4      R4
+      12              R7      R7      R7      R7              R7      R7
+      13              R1      R1      S8      S9              R1      R1
+      14              R2      R2      S8      S9              R2      R2
+      15              S6      S7                              S12
+goto
+               E       T       F
+       0       2       3       4
+       1
+       2
+       3
+       4
+       5      15       3       4
+       6              13       4
+       7              14       4
+       8                      11
+       9                      10
+      10
+      11
+      12
+      13
+      14
+      15
+Analysing: i
+              stateStack       charStack                  Action
+                       0               $                    init
+ input: i             0 1              $i                 Shift 1
+ input: $             0 4              $F          Reduce by F->i
+ input: $             0 3              $T          Reduce by T->F
+ input: $             0 2              $E          Reduce by E->T
+ input: $             0 2              $E                 Accept!
+Analysing: i+i
+              stateStack       charStack                  Action
+                       0               $                    init
+ input: i             0 1              $i                 Shift 1
+ input: +             0 4              $F          Reduce by F->i
+ input: +             0 3              $T          Reduce by T->F
+ input: +             0 2              $E          Reduce by E->T
+ input: +           0 2 6             $E+                 Shift 6
+ input: i         0 2 6 1            $E+i                 Shift 1
+ input: $         0 2 6 4            $E+F          Reduce by F->i
+ input: $        0 2 6 13            $E+T          Reduce by T->F
+ input: $             0 2              $E        Reduce by E->E+T
+ input: $             0 2              $E                 Accept!
+Analysing: i+i*i
+              stateStack       charStack                  Action
+                       0               $                    init
+ input: i             0 1              $i                 Shift 1
+ input: +             0 4              $F          Reduce by F->i
+ input: +             0 3              $T          Reduce by T->F
+ input: +             0 2              $E          Reduce by E->T
+ input: +           0 2 6             $E+                 Shift 6
+ input: i         0 2 6 1            $E+i                 Shift 1
+ input: *         0 2 6 4            $E+F          Reduce by F->i
+ input: *        0 2 6 13            $E+T          Reduce by T->F
+ input: *      0 2 6 13 8           $E+T*                 Shift 8
+ input: i    0 2 6 13 8 1          $E+T*i                 Shift 1
+ input: $   0 2 6 13 8 11          $E+T*F          Reduce by F->i
+ input: $        0 2 6 13            $E+T        Reduce by T->T*F
+ input: $             0 2              $E        Reduce by E->E+T
+ input: $             0 2              $E                 Accept!
+Analysing: i*i*i/i
+              stateStack       charStack                  Action
+                       0               $                    init
+ input: i             0 1              $i                 Shift 1
+ input: *             0 4              $F          Reduce by F->i
+ input: *             0 3              $T          Reduce by T->F
+ input: *           0 3 8             $T*                 Shift 8
+ input: i         0 3 8 1            $T*i                 Shift 1
+ input: *        0 3 8 11            $T*F          Reduce by F->i
+ input: *             0 3              $T        Reduce by T->T*F
+ input: *           0 3 8             $T*                 Shift 8
+ input: i         0 3 8 1            $T*i                 Shift 1
+ input: /        0 3 8 11            $T*F          Reduce by F->i
+ input: /             0 3              $T        Reduce by T->T*F
+ input: /           0 3 9             $T/                 Shift 9
+ input: i         0 3 9 1            $T/i                 Shift 1
+ input: $        0 3 9 10            $T/F          Reduce by F->i
+ input: $             0 3              $T        Reduce by T->T/F
+ input: $             0 2              $E          Reduce by E->T
+ input: $             0 2              $E                 Accept!
+Analysing: (i+i)*i
+              stateStack       charStack                  Action
+                       0               $                    init
+ input: (             0 5              $(                 Shift 5
+ input: i           0 5 1             $(i                 Shift 1
+ input: +           0 5 4             $(F          Reduce by F->i
+ input: +           0 5 3             $(T          Reduce by T->F
+ input: +          0 5 15             $(E          Reduce by E->T
+ input: +        0 5 15 6            $(E+                 Shift 6
+ input: i      0 5 15 6 1           $(E+i                 Shift 1
+ input: )      0 5 15 6 4           $(E+F          Reduce by F->i
+ input: )     0 5 15 6 13           $(E+T          Reduce by T->F
+ input: )          0 5 15             $(E        Reduce by E->E+T
+ input: )       0 5 15 12            $(E)                 Shift <
+ input: *             0 4              $F        Reduce by F->(E)
+ input: *             0 3              $T          Reduce by T->F
+ input: *           0 3 8             $T*                 Shift 8
+ input: i         0 3 8 1            $T*i                 Shift 1
+ input: $        0 3 8 11            $T*F          Reduce by F->i
+ input: $             0 3              $T        Reduce by T->T*F
+ input: $             0 2              $E          Reduce by E->T
+ input: $             0 2              $E                 Accept!

@@ -1,0 +1,10 @@
+E->TA
+A->+TG+A
+A->-TG-A
+A->@
+T->FB
+B->*FG*B
+B->/FG/B
+B->@
+F->iPi
+F->(E)

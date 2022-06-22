@@ -1,0 +1,351 @@
+Microsoft Windows [版本 10.0.22000.675]
+(c) Microsoft Corporation。保留所有权利。
+
+D:\hw\Compilers\lab\lab3>mingw32-make && mingw32-make test
+g++ -c main.cpp
+g++ -c Translator.cpp
+g++ main.o Translator.o -o Translator
+./Translator.exe demo.txt
+
+Grammar:
+(1) E->TA
+(2) A->+TA
+(3) A->-TA
+(4) A->@
+(5) T->FB
+(6) B->*FB
+(7) B->/FB
+(8) B->@
+(9) F->i
+(10) F->(E)
+
+Translation Grammar:
+E->TA
+A->+TG+A
+A->-TG-A
+A->@
+T->FB
+B->*FG*B
+B->/FG/B
+B->@
+F->iPi
+F->(E)
+
+Terminators with size of 9: {+ - @ * / i ( ) $ }
+
+nonTerminators with size of 5: {E A T B F }
+First set of production rules
+E->TA: {( i }
+A->+TA: {+ }
+A->-TA: {- }
+A->@: {@ }
+T->FB: {( i }
+B->*FB: {* }
+B->/FB: {/ }
+B->@: {@ }
+F->i: {i }
+F->(E): {( }
+
+First set of nonTerminators
+E: { ( i }
+A: { + - @ }
+T: { ( i }
+B: { * / @ }
+F: { ( i }
+
+
+Follow set of nonTerminators
+E: { $ ) }
+A: { $ ) }
+T: { $ ) + - }
+B: { $ ) + - }
+F: { $ ) * + - / }
+
+Analysis Table
+                             +              -              @              *              /              i              (              )              $
+              E                                                                                     E->TA          E->TA
+              A         A->+TA         A->-TA                                                                                      A->@           A->@
+              T                                                                                     T->FB          T->FB
+              B           B->@           B->@                        B->*FB         B->/FB                                         B->@           B->@
+              F                                                                                      F->i         F->(E)
+
+Analysing: a
+
+SYN Stack      Input          Operation      SEM stack      Quat
+$E             a$             E->TA
+$AT            a$             T->FB
+$ABF           a$             F->iPi
+$ABaPa         a$             Match a
+$ABaP          $              Push a
+$AB            $                             a
+$AB            $              B->@           a
+$A             $              A->@           a
+$              $              Accept!        a
+Analyze successfully!
+
+Quats:
+
+Analysing: a+b
+
+SYN Stack      Input          Operation      SEM stack      Quat
+$E             a+b$           E->TA
+$AT            a+b$           T->FB
+$ABF           a+b$           F->iPi
+$ABaPa         a+b$           Match a
+$ABaP          +b$            Push a
+$AB            +b$                           a
+$AB            +b$            B->@           a
+$A             +b$            A->+TG+A       a
+$A+GT+         +b$            Match +        a
+$A+GT          b$             T->FB          a
+$A+GBF         b$             F->iPi         a
+$A+GBbPb       b$             Match b        a
+$A+GBbP        $              Push b         a
+$A+GB          $                             ab
+$A+GB          $              B->@           ab
+$A+G           $              Geq +          ab
+$A             $                             t              (+, a, b, t1)
+$A             $              A->@           t
+$              $              Accept!        t
+Analyze successfully!
+
+Quats:
+(1) (+, a, b, t1)
+
+Analysing: a+b*c
+
+SYN Stack      Input          Operation      SEM stack      Quat
+$E             a+b*c$         E->TA
+$AT            a+b*c$         T->FB
+$ABF           a+b*c$         F->iPi
+$ABaPa         a+b*c$         Match a
+$ABaP          +b*c$          Push a
+$AB            +b*c$                         a
+$AB            +b*c$          B->@           a
+$A             +b*c$          A->+TG+A       a
+$A+GT+         +b*c$          Match +        a
+$A+GT          b*c$           T->FB          a
+$A+GBF         b*c$           F->iPi         a
+$A+GBbPb       b*c$           Match b        a
+$A+GBbP        *c$            Push b         a
+$A+GB          *c$                           ab
+$A+GB          *c$            B->*FG*B       ab
+$A+GB*GF*      *c$            Match *        ab
+$A+GB*GF       c$             F->iPi         ab
+$A+GB*GcPc     c$             Match c        ab
+$A+GB*GcP      $              Push c         ab
+$A+GB*G        $                             abc
+$A+GB*G        $              Geq *          abc
+$A+GB          $                             at             (*, b, c, t1)
+$A+GB          $              B->@           at
+$A+G           $              Geq +          at
+$A             $                             t              (+, a, t1, t2)
+$A             $              A->@           t
+$              $              Accept!        t
+Analyze successfully!
+
+Quats:
+(1) (*, b, c, t1)
+(2) (+, a, t1, t2)
+
+Analysing: a*b*c/d
+
+SYN Stack      Input          Operation      SEM stack      Quat
+$E             a*b*c/d$       E->TA
+$AT            a*b*c/d$       T->FB
+$ABF           a*b*c/d$       F->iPi
+$ABaPa         a*b*c/d$       Match a
+$ABaP          *b*c/d$        Push a
+$AB            *b*c/d$                       a
+$AB            *b*c/d$        B->*FG*B       a
+$AB*GF*        *b*c/d$        Match *        a
+$AB*GF         b*c/d$         F->iPi         a
+$AB*GbPb       b*c/d$         Match b        a
+$AB*GbP        *c/d$          Push b         a
+$AB*G          *c/d$                         ab
+$AB*G          *c/d$          Geq *          ab
+$AB            *c/d$                         t              (*, a, b, t1)
+$AB            *c/d$          B->*FG*B       t
+$AB*GF*        *c/d$          Match *        t
+$AB*GF         c/d$           F->iPi         t
+$AB*GcPc       c/d$           Match c        t
+$AB*GcP        /d$            Push c         t
+$AB*G          /d$                           tc
+$AB*G          /d$            Geq *          tc
+$AB            /d$                           t              (*, t1, c, t2)
+$AB            /d$            B->/FG/B       t
+$AB/GF/        /d$            Match /        t
+$AB/GF         d$             F->iPi         t
+$AB/GdPd       d$             Match d        t
+$AB/GdP        $              Push d         t
+$AB/G          $                             td
+$AB/G          $              Geq /          td
+$AB            $                             t              (/, t2, d, t3)
+$AB            $              B->@           t
+$A             $              A->@           t
+$              $              Accept!        t
+Analyze successfully!
+
+Quats:
+(1) (*, a, b, t1)
+(2) (*, t1, c, t2)
+(3) (/, t2, d, t3)
+
+Analysing: (a+b)*c
+
+SYN Stack      Input          Operation      SEM stack      Quat
+$E             (a+b)*c$       E->TA
+$AT            (a+b)*c$       T->FB
+$ABF           (a+b)*c$       F->(E)
+$AB)E(         (a+b)*c$       Match (
+$AB)E          a+b)*c$        E->TA
+$AB)AT         a+b)*c$        T->FB
+$AB)ABF        a+b)*c$        F->iPi
+$AB)ABaPa      a+b)*c$        Match a
+$AB)ABaP       +b)*c$         Push a
+$AB)AB         +b)*c$                        a
+$AB)AB         +b)*c$         B->@           a
+$AB)A          +b)*c$         A->+TG+A       a
+$AB)A+GT+      +b)*c$         Match +        a
+$AB)A+GT       b)*c$          T->FB          a
+$AB)A+GBF      b)*c$          F->iPi         a
+$AB)A+GBbPb    b)*c$          Match b        a
+$AB)A+GBbP     )*c$           Push b         a
+$AB)A+GB       )*c$                          ab
+$AB)A+GB       )*c$           B->@           ab
+$AB)A+G        )*c$           Geq +          ab
+$AB)A          )*c$                          t              (+, a, b, t1)
+$AB)A          )*c$           A->@           t
+$AB)           )*c$           Match )        t
+$AB            *c$            B->*FG*B       t
+$AB*GF*        *c$            Match *        t
+$AB*GF         c$             F->iPi         t
+$AB*GcPc       c$             Match c        t
+$AB*GcP        $              Push c         t
+$AB*G          $                             tc
+$AB*G          $              Geq *          tc
+$AB            $                             t              (*, t1, c, t2)
+$AB            $              B->@           t
+$A             $              A->@           t
+$              $              Accept!        t
+Analyze successfully!
+
+Quats:
+(1) (+, a, b, t1)
+(2) (*, t1, c, t2)
+
+Analysing: a*(b/c-d)
+
+SYN Stack      Input          Operation      SEM stack      Quat
+$E             a*(b/c-d)$     E->TA
+$AT            a*(b/c-d)$     T->FB
+$ABF           a*(b/c-d)$     F->iPi
+$ABaPa         a*(b/c-d)$     Match a
+$ABaP          *(b/c-d)$      Push a
+$AB            *(b/c-d)$                     a
+$AB            *(b/c-d)$      B->*FG*B       a
+$AB*GF*        *(b/c-d)$      Match *        a
+$AB*GF         (b/c-d)$       F->(E)         a
+$AB*G)E(       (b/c-d)$       Match (        a
+$AB*G)E        b/c-d)$        E->TA          a
+$AB*G)AT       b/c-d)$        T->FB          a
+$AB*G)ABF      b/c-d)$        F->iPi         a
+$AB*G)ABbPb    b/c-d)$        Match b        a
+$AB*G)ABbP     /c-d)$         Push b         a
+$AB*G)AB       /c-d)$                        ab
+$AB*G)AB       /c-d)$         B->/FG/B       ab
+$AB*G)AB/GF/   /c-d)$         Match /        ab
+$AB*G)AB/GF    c-d)$          F->iPi         ab
+$AB*G)AB/GcPc  c-d)$          Match c        ab
+$AB*G)AB/GcP   -d)$           Push c         ab
+$AB*G)AB/G     -d)$                          abc
+$AB*G)AB/G     -d)$           Geq /          abc
+$AB*G)AB       -d)$                          at             (/, b, c, t1)
+$AB*G)AB       -d)$           B->@           at
+$AB*G)A        -d)$           A->-TG-A       at
+$AB*G)A-GT-    -d)$           Match -        at
+$AB*G)A-GT     d)$            T->FB          at
+$AB*G)A-GBF    d)$            F->iPi         at
+$AB*G)A-GBdPd  d)$            Match d        at
+$AB*G)A-GBdP   )$             Push d         at
+$AB*G)A-GB     )$                            atd
+$AB*G)A-GB     )$             B->@           atd
+$AB*G)A-G      )$             Geq -          atd
+$AB*G)A        )$                            at             (-, t1, d, t2)
+$AB*G)A        )$             A->@           at
+$AB*G)         )$             Match )        at
+$AB*G          $              Geq *          at
+$AB            $                             t              (*, a, t2, t3)
+$AB            $              B->@           t
+$A             $              A->@           t
+$              $              Accept!        t
+Analyze successfully!
+
+Quats:
+(1) (/, b, c, t1)
+(2) (-, t1, d, t2)
+(3) (*, a, t2, t3)
+
+Analysing: a+b*(c/d-e)
+
+SYN Stack      Input          Operation      SEM stack      Quat
+$E             a+b*(c/d-e)$   E->TA
+$AT            a+b*(c/d-e)$   T->FB
+$ABF           a+b*(c/d-e)$   F->iPi
+$ABaPa         a+b*(c/d-e)$   Match a
+$ABaP          +b*(c/d-e)$    Push a
+$AB            +b*(c/d-e)$                   a
+$AB            +b*(c/d-e)$    B->@           a
+$A             +b*(c/d-e)$    A->+TG+A       a
+$A+GT+         +b*(c/d-e)$    Match +        a
+$A+GT          b*(c/d-e)$     T->FB          a
+$A+GBF         b*(c/d-e)$     F->iPi         a
+$A+GBbPb       b*(c/d-e)$     Match b        a
+$A+GBbP        *(c/d-e)$      Push b         a
+$A+GB          *(c/d-e)$                     ab
+$A+GB          *(c/d-e)$      B->*FG*B       ab
+$A+GB*GF*      *(c/d-e)$      Match *        ab
+$A+GB*GF       (c/d-e)$       F->(E)         ab
+$A+GB*G)E(     (c/d-e)$       Match (        ab
+$A+GB*G)E      c/d-e)$        E->TA          ab
+$A+GB*G)AT     c/d-e)$        T->FB          ab
+$A+GB*G)ABF    c/d-e)$        F->iPi         ab
+$A+GB*G)ABcPc  c/d-e)$        Match c        ab
+$A+GB*G)ABcP   /d-e)$         Push c         ab
+$A+GB*G)AB     /d-e)$                        abc
+$A+GB*G)AB     /d-e)$         B->/FG/B       abc
+$A+GB*G)AB/GF/ /d-e)$         Match /        abc
+$A+GB*G)AB/GF  d-e)$          F->iPi         abc
+$A+GB*G)AB/GdPdd-e)$          Match d        abc
+$A+GB*G)AB/GdP -e)$           Push d         abc
+$A+GB*G)AB/G   -e)$                          abcd
+$A+GB*G)AB/G   -e)$           Geq /          abcd
+$A+GB*G)AB     -e)$                          abt            (/, c, d, t1)
+$A+GB*G)AB     -e)$           B->@           abt
+$A+GB*G)A      -e)$           A->-TG-A       abt
+$A+GB*G)A-GT-  -e)$           Match -        abt
+$A+GB*G)A-GT   e)$            T->FB          abt
+$A+GB*G)A-GBF  e)$            F->iPi         abt
+$A+GB*G)A-GBePee)$            Match e        abt
+$A+GB*G)A-GBeP )$             Push e         abt
+$A+GB*G)A-GB   )$                            abte
+$A+GB*G)A-GB   )$             B->@           abte
+$A+GB*G)A-G    )$             Geq -          abte
+$A+GB*G)A      )$                            abt            (-, t1, e, t2)
+$A+GB*G)A      )$             A->@           abt
+$A+GB*G)       )$             Match )        abt
+$A+GB*G        $              Geq *          abt
+$A+GB          $                             at             (*, b, t2, t3)
+$A+GB          $              B->@           at
+$A+G           $              Geq +          at
+$A             $                             t              (+, a, t3, t4)
+$A             $              A->@           t
+$              $              Accept!        t
+Analyze successfully!
+
+Quats:
+(1) (/, c, d, t1)
+(2) (-, t1, e, t2)
+(3) (*, b, t2, t3)
+(4) (+, a, t3, t4)
+
