@@ -179,7 +179,7 @@ FIRST和FOLLOW集如下：
 | T    | ( i     | \+ \- ) $ \* / |
 | F    | ( i     | \+ \- ) $ \* / |
 
-![DFA](gallery/DFA.jpg)
+![DFA](gallery/DFA.png)
 
 ##### LR分析表
 
