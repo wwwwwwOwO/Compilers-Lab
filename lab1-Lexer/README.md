@@ -86,7 +86,7 @@ mingw32-make test
 | ------ | ------------------------------------------------------------ | ---------------- | ------ |
 | 关键字 | auto、break、case、char、const、continue、default、do、double、else、enum、extern、float、for、goto、if、int、long、register、return、short、signed、sizeof、static、struct、switch、typedef、unsigned、union、void、volatile、while | 一字一种         | 0~31   |
 | 标识符 | c(c\|d)*  (c为字母，d为数字)                                 | 统一作为一种单词 | 32     |
-| 常数   | d*、"c\*"、'c'，(c为字母，d为数字)                           | 一型一种         | 33~35  |
+| 常数   | d+、"c\*"、'c'，(c为字母，d为数字)                           | 一型一种         | 33~35  |
 | 运算符 | (、)、[、]、->、!、~、++、--、-、*、&、/、%、+、<<、>>、<、<=、>、>=、==、!=、\^、\|、\&\&、\|\|、\=、+\=、-\=、\*\=、/\=、%\=、&\=、^\=、\|\= | 一字一种         | 36~71  |
 | 界符   | ;、{、}、,、:                                                | 一字一种         | 72~76  |
 
